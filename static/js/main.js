@@ -123,10 +123,19 @@ $(document).ready(function(){
                                 console.log(data)
 
 
-                                var result = JSON.parse(data.list_not_ok_questions);
+                                var result = JSON.parse(data.not_ok_questions);
 
                                 console.log(result)
-                                var html = '<div class="row mb-5"><div class="list-group w-100 ">'
+                                var html = '<div class="row mb-5"><div class="list-group w-100 "><ul>';
+
+
+                                for (i = 0; i < result.length; i++) {
+                                    html += '<li class="list-group-item" data-id="' + result[i].pk + '">' + result[i].fields.not_ok_vop + '</li>';
+                                }
+                                html += '</ul></div></div>';
+
+                                $('h1.cover-heading').after(html);
+
                             }
                      }
                  });

@@ -75,20 +75,31 @@ def next_question(request):
     del massivId[0]
 
     if len(massivId) == 0:
-        data['flag'] = 1
+        data = {'flag': 1}
         session_key = request.session.session_key
 
-        list_not_ok_questions = UsersAnswers.objects.filter(session_key=session_key).exclude(not_ok_vop__isnull=True).values_list('not_ok_vop', 'not_ok_otv')
+        # list_not_ok_questions = UsersAnswers.objects.filter(session_key=session_key).exclude(not_ok_vop__isnull=True).values('not_ok_vop', 'not_ok_otv')
 
-        # list_NotOk = UsersAnswers.objects.filter(session_key=session_key, not_ok_vop=questions__id).exclude(not_ok_vop__isnull=True)
+        list_not_ok_questions = UsersAnswers.objects.filter(session_key=session_key).filter(not_ok_vop__gt=0)
         # list_NotOk = Questions.objects.filter(id=usersanswers__not_ok_vop, usersanswers__session_key=session_key)
         # print(list_NotOk)
         # print(list_NotOk.query)
+
+        for i in list_not_ok_questions:
+            print(i[1])
 
 
         print(session_key)
         print(list_not_ok_questions.query)
         print(list_not_ok_questions)
+
+        # data = {'not_ok_questions': serializers.serialize('json', list_not_ok_questions, indent=2)}
+        data['not_ok_questions'] = serializers.serialize('json', list_not_ok_questions, fields=('not_ok_vop', 'not_ok_otv'), indent=2)
+        # data['list_not_ok_questions'] = list_not_ok_questions
+
+        print(data)
+        # print(list_not_ok_questions.query)
+        # print(list_not_ok_questions)
 
         return JsonResponse(data)
     else:
@@ -119,7 +130,7 @@ def next_question(request):
         data['total'] = total
         data['flag'] = 0
 
-        # print(count)
+        # print(data['answers'])
 
         return JsonResponse(data)
 

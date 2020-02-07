@@ -15,7 +15,15 @@ class UsersAnswers(models.Model):
     ok_otv = models.IntegerField(verbose_name="Правильный ответ", null=True, default=0)
 
     def __str__(self):
-        return self.user
+        # return self.user
+        return "%s, %s, %s, %s, %s" % (self.user, self.not_ok_vop, self.not_ok_otv, self.ok_vop, self.ok_otv)
+
+    class Meta:
+        """Сортировка по полю ID
+        ordering: List['id']
+        """
+        verbose_name = "Ответ на вопрос"
+        verbose_name_plural = "Ответы на вопросы"
 
 
 
@@ -60,8 +68,10 @@ class Answers(models.Model):
 
     def __str__(self):
         #return "%s, %s" % (self.vop_id, self.description)
-        return "%s, %s" % self.description, self.approved
+        return "%s, %s" % (self.description, self.approved)
 
     class Meta:
         verbose_name = "Ответ"
         verbose_name_plural = "Ответы"
+
+

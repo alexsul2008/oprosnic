@@ -58,50 +58,70 @@ def question_ajax(request):
 @csrf_exempt
 # def next_question(request, pk):
 def next_question(request):
-    print(request.POST)
-    print(request.POST['id'])
+    # print(request.POST)
+    # print(request.POST['id'])
 
     massivId = request.session["listQuestionsCook"]
     total = int(request.session["total_questions"])
     counts = int(request.session["count_questions"])
-    print('count до: ', counts)
+    # print('count до: ', counts)
     counts += 1
     request.session["count_questions"] = counts
-    print('count после: ', request.session["count_questions"])
-    print(massivId)
+    # print('count после: ', request.session["count_questions"])
+    # print(massivId)
     data = {}
     # answers_list = ()
     # pk = request.POST['id']
     del massivId[0]
-    pk = massivId[0]
-    # questions_list = Questions.objects.filter(id=pk)
-    questions_list = Questions.objects.get(id=pk).description
-    answers_list = Answers.objects.filter(vop_id_id=pk)
 
-    try:
-        last = massivId[1]
-    except:
-        last = massivId[0]
+    if len(massivId) == 0:
+        data['flag'] = 1
+        session_key = request.session.session_key
 
+        list_not_ok_questions = UsersAnswers.objects.filter(session_key=session_key).exclude(not_ok_vop__isnull=True).values_list('not_ok_vop', 'not_ok_otv')
 
-    print(massivId)
-    request.session["listQuestionsCook"] = massivId
-    print(pk)
-    print(massivId[0])
-    print(last)
-
-    # data['questions_list'] = serializers.serialize('json', questions_list, indent=2, ensure_ascii=False, fields=('description','image', 'doc_url'))
-    data['questions_list'] = questions_list
-    data['answers'] = serializers.serialize('json', answers_list, indent=2, ensure_ascii=False, fields=('description','approved'))
-    data['next'] = last
-    data['id'] = massivId[0]
-    data['count'] = counts
-    data['total'] = total
+        # list_NotOk = UsersAnswers.objects.filter(session_key=session_key, not_ok_vop=questions__id).exclude(not_ok_vop__isnull=True)
+        # list_NotOk = Questions.objects.filter(id=usersanswers__not_ok_vop, usersanswers__session_key=session_key)
+        # print(list_NotOk)
+        # print(list_NotOk.query)
 
 
-    # print(count)
+        print(session_key)
+        print(list_not_ok_questions.query)
+        print(list_not_ok_questions)
 
-    return JsonResponse(data)
+        return JsonResponse(data)
+    else:
+
+        pk = massivId[0]
+        # questions_list = Questions.objects.filter(id=pk)
+        questions_list = Questions.objects.get(id=pk).description
+        answers_list = Answers.objects.filter(vop_id_id=pk)
+
+        try:
+            last = massivId[1]
+        except:
+            last = massivId[0]
+
+
+        # print(massivId)
+        request.session["listQuestionsCook"] = massivId
+        # print(pk)
+        # print(massivId[0])
+        # print(last)
+
+        # data['questions_list'] = serializers.serialize('json', questions_list, indent=2, ensure_ascii=False, fields=('description','image', 'doc_url'))
+        data['questions_list'] = questions_list
+        data['answers'] = serializers.serialize('json', answers_list, indent=2, ensure_ascii=False, fields=('description','approved'))
+        data['next'] = last
+        data['id'] = massivId[0]
+        data['count'] = counts
+        data['total'] = total
+        data['flag'] = 0
+
+        # print(count)
+
+        return JsonResponse(data)
 
 
 
